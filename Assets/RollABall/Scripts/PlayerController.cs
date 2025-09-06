@@ -6,18 +6,20 @@ using UnityEngine.UI;
 using System.Collections;
 
 public class PlayerController : MonoBehaviour {
-	
+
 	// Create public variables for player speed, and for the Text UI game objects
 	public float speed;
+	public float jumpForce;
+	public Transform cam;
 	public Text countText;
 	public Text winText;
-
 	// Create private references to the rigidbody component on the player, and the count of pick up objects picked up so far
 	private Rigidbody rb;
 	private int count;
+	public GroundCheck groundCheck;
 
 	// At the start of the game..
-	void Start ()
+	void Start()
 	{
 		// Assign the Rigidbody component to our private rb variable
 		rb = GetComponent<Rigidbody>();
@@ -26,25 +28,38 @@ public class PlayerController : MonoBehaviour {
 		count = 0;
 
 		// Run the SetCountText function to update the UI (see below)
-		SetCountText ();
+		SetCountText();
 
 		// Set the text property of our Win Text UI to an empty string, making the 'You Win' (game over message) blank
 		winText.text = "";
 	}
-
-	// Each physics step..
-	void FixedUpdate ()
+	private void Update()
+	{
+		if ( (Input.GetButtonDown("Jump") || Input.GetKeyDown(KeyCode.Joystick1Button0)) && groundCheck.getGrounded() == true)
+		{
+			rb.AddForce(new Vector3(0,jumpForce,0));
+		}
+    }
+    // Each physics step..
+    void FixedUpdate ()
 	{
 		// Set some local float variables equal to the value of our Horizontal and Vertical Inputs
 		float moveHorizontal = Input.GetAxis ("Horizontal");
 		float moveVertical = Input.GetAxis ("Vertical");
 
 		// Create a Vector3 variable, and assign X and Z to feature our horizontal and vertical float variables above
-		Vector3 movement = new Vector3 (moveHorizontal, 0.0f, moveVertical);
+		Vector3 movement = new Vector3 (moveHorizontal, 0.0f, moveVertical).normalized;
 
 		// Add a physical force to our Player rigidbody using our 'movement' Vector3 above, 
 		// multiplying it by 'speed' - our public player speed that appears in the inspector
-		rb.AddForce (movement * speed);
+		if (movement.magnitude >= 0.1f)
+		{
+			//Finds the angle the player wants the ball to move in
+			float targetAngle = Mathf.Atan2(movement.x, movement.z) * Mathf.Rad2Deg + cam.eulerAngles.y;
+			
+			Vector3 moveDir = Quaternion.Euler(0, targetAngle, 0) * Vector3.forward;
+			rb.AddForce(moveDir.normalized * speed);
+		}
 	}
 
 	// When this game object intersects a collider with 'is trigger' checked, 
