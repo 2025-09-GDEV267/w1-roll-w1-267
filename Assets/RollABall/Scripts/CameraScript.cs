@@ -33,8 +33,5 @@ public class CameraScript : MonoBehaviour
         {
             transform.Rotate(new Vector3(0, LookXKeys * Sensitivity, 0));
         }
-
-        Debug.Log(LookXController);
-        Debug.Log(LookXKeys);
     }
 }

@@ -4,12 +4,16 @@
 using UnityEngine.UI;
 
 using System.Collections;
+using Unity.VisualScripting;
 
 public class PlayerController : MonoBehaviour {
 
 	// Create public variables for player speed, and for the Text UI game objects
 	public float speed;
+    float ballSpeed;
 	public float jumpForce;
+	public float fallMax;
+	public Transform spawnPoint;
 	public Transform cam;
 	public Text countText;
 	public Text winText;
@@ -17,6 +21,10 @@ public class PlayerController : MonoBehaviour {
 	private Rigidbody rb;
 	private int count;
 	public GroundCheck groundCheck;
+	public Grappler grappler;
+
+	[SerializeField]
+	ScreenWipe screenWipe;
 
 	// At the start of the game..
 	void Start()
@@ -32,12 +40,23 @@ public class PlayerController : MonoBehaviour {
 
 		// Set the text property of our Win Text UI to an empty string, making the 'You Win' (game over message) blank
 		winText.text = "";
+
+		ballSpeed = speed;
 	}
 	private void Update()
 	{
 		if ( (Input.GetButtonDown("Jump") || Input.GetKeyDown(KeyCode.Joystick1Button0)) && groundCheck.getGrounded() == true)
 		{
 			rb.AddForce(new Vector3(0,jumpForce,0));
+		}
+
+		if (grappler.getGrappled() == true)
+		{
+			ballSpeed = speed * 2;
+		}
+		else
+		{
+			ballSpeed = speed;
 		}
     }
     // Each physics step..
@@ -58,10 +77,22 @@ public class PlayerController : MonoBehaviour {
 			float targetAngle = Mathf.Atan2(movement.x, movement.z) * Mathf.Rad2Deg + cam.eulerAngles.y;
 			
 			Vector3 moveDir = Quaternion.Euler(0, targetAngle, 0) * Vector3.forward;
-			rb.AddForce(moveDir.normalized * speed);
+			rb.AddForce(moveDir.normalized * ballSpeed);
+		}
+
+		if (transform.position.y < fallMax)
+		{
+			screenWipe.StartScreenWipe();
+			Invoke("Respawn",1f);
 		}
 	}
 
+	public void Respawn()
+	{
+        rb.linearVelocity = new Vector3(0, 0, 0);
+        transform.position = spawnPoint.position;
+		screenWipe.StartScreenWipeAway();
+	}
 	// When this game object intersects a collider with 'is trigger' checked, 
 	// store a reference to that collider in a variable named 'other'..
 	void OnTriggerEnter(Collider other) 
