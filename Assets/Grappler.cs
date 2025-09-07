@@ -14,6 +14,9 @@ public class Grappler : MonoBehaviour
     private SpringJoint joint;
 
     private bool isGrappled;
+
+    public ComboTracker combo;
+
     private void Start()
     {
         grappleObjects = GameObject.FindGameObjectsWithTag("grapple");
@@ -58,13 +61,15 @@ public class Grappler : MonoBehaviour
 
 
 
-        if (Input.GetKeyDown(KeyCode.Q))
+        if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.Joystick1Button2))
         {
             StartGrapple();
+            
         }
-        if (Input.GetKeyUp(KeyCode.Q))
+        if (Input.GetKeyUp(KeyCode.Q) || Input.GetKeyUp(KeyCode.Joystick1Button2))
         {
             StopGrapple();
+            combo.setIsGrappled(false, grapplePoint);
         }
 
     }
@@ -79,6 +84,7 @@ public class Grappler : MonoBehaviour
         isGrappled = true;
         if (Closest != null)
         {
+            combo.setIsGrappled(true, grapplePoint);
             DrawRope();
             grapplePoint = Closest.transform.position;
             joint = Player.gameObject.AddComponent<SpringJoint>();

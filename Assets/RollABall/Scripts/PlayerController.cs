@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 using System.Collections;
 using Unity.VisualScripting;
+using System;
 
 public class PlayerController : MonoBehaviour {
 
@@ -17,12 +18,13 @@ public class PlayerController : MonoBehaviour {
 	public Transform cam;
 	public Text countText;
 	public Text winText;
+	public float maxVelocity;
 	// Create private references to the rigidbody component on the player, and the count of pick up objects picked up so far
 	private Rigidbody rb;
 	private int count;
 	public GroundCheck groundCheck;
 	public Grappler grappler;
-
+	public ComboTracker comboTracker;
 	[SerializeField]
 	ScreenWipe screenWipe;
 
@@ -35,12 +37,6 @@ public class PlayerController : MonoBehaviour {
 		// Set the count to zero 
 		count = 0;
 
-		// Run the SetCountText function to update the UI (see below)
-		SetCountText();
-
-		// Set the text property of our Win Text UI to an empty string, making the 'You Win' (game over message) blank
-		winText.text = "";
-
 		ballSpeed = speed;
 	}
 	private void Update()
@@ -49,7 +45,7 @@ public class PlayerController : MonoBehaviour {
 		{
 			rb.AddForce(new Vector3(0,jumpForce,0));
 		}
-
+		
 		if (grappler.getGrappled() == true)
 		{
 			ballSpeed = speed * 2;
@@ -58,12 +54,14 @@ public class PlayerController : MonoBehaviour {
 		{
 			ballSpeed = speed;
 		}
+		comboTracker.setIsGrounded(groundCheck.getGrounded());
     }
     // Each physics step..
     void FixedUpdate ()
 	{
-		// Set some local float variables equal to the value of our Horizontal and Vertical Inputs
-		float moveHorizontal = Input.GetAxis ("Horizontal");
+    
+    // Set some local float variables equal to the value of our Horizontal and Vertical Inputs
+    float moveHorizontal = Input.GetAxis ("Horizontal");
 		float moveVertical = Input.GetAxis ("Vertical");
 
 		// Create a Vector3 variable, and assign X and Z to feature our horizontal and vertical float variables above
@@ -89,9 +87,14 @@ public class PlayerController : MonoBehaviour {
 
 	public void Respawn()
 	{
+		comboTracker.getRespawned(true);
         rb.linearVelocity = new Vector3(0, 0, 0);
         transform.position = spawnPoint.position;
 		screenWipe.StartScreenWipeAway();
+	}
+	public int getMagnitude()
+	{
+		return Convert.ToInt32(rb.linearVelocity.magnitude * 10);
 	}
 	// When this game object intersects a collider with 'is trigger' checked, 
 	// store a reference to that collider in a variable named 'other'..
@@ -105,23 +108,6 @@ public class PlayerController : MonoBehaviour {
 
 			// Add one to the score variable 'count'
 			count = count + 1;
-
-			// Run the 'SetCountText()' function (see below)
-			SetCountText ();
-		}
-	}
-
-	// Create a standalone function that can update the 'countText' UI and check if the required amount to win has been achieved
-	void SetCountText()
-	{
-		// Update the text field of our 'countText' variable
-		countText.text = "Count: " + count.ToString ();
-
-		// Check if our 'count' is equal to or exceeded 12
-		if (count >= 12) 
-		{
-			// Set the text value of our 'winText'
-			winText.text = "You Win!";
 		}
 	}
 }
