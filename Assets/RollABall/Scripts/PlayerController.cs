@@ -41,7 +41,7 @@ public class PlayerController : MonoBehaviour {
 	}
 	private void Update()
 	{
-		if ( (Input.GetButtonDown("Jump") || Input.GetKeyDown(KeyCode.Joystick1Button0)) && groundCheck.getGrounded() == true)
+		if ( ((Input.GetButtonDown("Jump") || Input.GetKeyDown(KeyCode.Joystick1Button0)) && groundCheck.getGrounded() == true) && Time.timeScale == 1f)
 		{
 			rb.AddForce(new Vector3(0,jumpForce,0));
 		}

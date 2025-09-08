@@ -3,14 +3,17 @@ using UnityEngine;
 public class GroundCheck : MonoBehaviour
 {
     private bool isGrounded;
-    private void OnTriggerEnter(Collider other)
-    {
-        isGrounded = true;
-    }
 
-    private void OnTriggerExit(Collider other)
+    float groundDistance = 0.4f;
+    public LayerMask groundMask;
+
+    private void Start()
     {
         isGrounded = false;
+    }
+    private void Update()
+    {
+        isGrounded = Physics.CheckSphere(transform.position, groundDistance,groundMask);
     }
 
     public bool getGrounded()
