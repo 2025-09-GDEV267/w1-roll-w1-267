@@ -27,7 +27,10 @@ public class PlayerController : MonoBehaviour {
 	public ComboTracker comboTracker;
 	[SerializeField]
 	ScreenWipe screenWipe;
+	[SerializeField]
+	AudioSource dead;
 
+	private bool canReset = true;
 	// At the start of the game..
 	void Start()
 	{
@@ -81,33 +84,45 @@ public class PlayerController : MonoBehaviour {
 		if (transform.position.y < fallMax)
 		{
 			screenWipe.StartScreenWipe();
-			Invoke("Respawn",1f);
+
+			if (dead.isPlaying == false)
+			{
+                dead.pitch = UnityEngine.Random.Range(0.9f, 1.1f);
+                dead.Play();
+			}
+			canReset = false;
+			Invoke("Respawn",1.5f);
+		}
+		if (Time.timeScale == 1 && canReset)
+		{
+			if (Input.GetKeyDown(KeyCode.R) || Input.GetKeyDown(KeyCode.Joystick1Button6))
+			{
+				canReset = false;
+				screenWipe.StartScreenWipe();
+				Invoke("Respawn", 1.5f);
+			}
 		}
 	}
 
 	public void Respawn()
 	{
+		if(grappler.getGrappled()) grappler.StopGrapple();
 		comboTracker.getRespawned(true);
         rb.linearVelocity = new Vector3(0, 0, 0);
         transform.position = spawnPoint.position;
 		screenWipe.StartScreenWipeAway();
+		Invoke("setResetToTrue", 5f);
 	}
-	public int getMagnitude()
+
+	private void setResetToTrue()
+	{
+        canReset = true;
+
+    }
+    public int getMagnitude()
 	{
 		return Convert.ToInt32(rb.linearVelocity.magnitude * 10);
 	}
 	// When this game object intersects a collider with 'is trigger' checked, 
 	// store a reference to that collider in a variable named 'other'..
-	void OnTriggerEnter(Collider other) 
-	{
-		// ..and if the game object we intersect has the tag 'Pick Up' assigned to it..
-		if (other.gameObject.CompareTag ("Pick Up"))
-		{
-			// Make the other game object (the pick up) inactive, to make it disappear
-			other.gameObject.SetActive (false);
-
-			// Add one to the score variable 'count'
-			count = count + 1;
-		}
-	}
 }

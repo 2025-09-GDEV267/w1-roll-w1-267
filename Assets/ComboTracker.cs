@@ -15,7 +15,7 @@ public class ComboTracker : MonoBehaviour
     [SerializeField]
     PlayerController Player;
     [SerializeField]
-    TMP_Text VelText, AirText, GrappleText;
+    TMP_Text VelText, AirText, GrappleText,CollectedScoreText;
     [SerializeField]
     GameObject MathText,ComboTotal;
     public Vector3 lastGrappled;
@@ -34,6 +34,11 @@ public class ComboTracker : MonoBehaviour
     private bool isGrounded = false;
     private bool died = false;
     public int fillAmnt;
+
+    public float textFadeTime;
+    public float textFadeTimeIndex;
+    [SerializeField]
+    private int collectedPoints;
 
     private bool boolToBeToggledForTheAddedTextThingCauseICantCode = false;
     Color flairColor;
@@ -85,6 +90,21 @@ public class ComboTracker : MonoBehaviour
     void Update()
     {
 
+        if (textFadeTimeIndex > 0)
+        {
+            textFadeTimeIndex -= Time.deltaTime;
+            CollectedScoreText.text = "+" + collectedPoints;
+        }
+        else if (textFadeTimeIndex <= 0)
+        {
+            addScore(collectedPoints);
+            collectedPoints = 0;
+        }
+
+        float percentThrough = textFadeTimeIndex / textFadeTime;
+
+        CollectedScoreText.color = new Color(CollectedScoreText.color.r, CollectedScoreText.color.g, CollectedScoreText.color.b, percentThrough);
+
         scoreFlair.fillAmount = (float)fillAmnt/100f;
 
         if (DsiplayScore < 999999)
@@ -129,7 +149,7 @@ public class ComboTracker : MonoBehaviour
         {
             airTime = 0;
             hideText();
-            addScore();
+            addScore(potentialScore);
 
             potentialScore = 0;
             compoundScore = 0;
@@ -150,9 +170,9 @@ public class ComboTracker : MonoBehaviour
         boolToBeToggledForTheAddedTextThingCauseICantCode = false;
         MathText.SetActive(false);
     }
-    public void addScore()
+    public void addScore(int scoreToBeAdded)
     {
-        Score += potentialScore;
+        Score += scoreToBeAdded;
         StartCoroutine("Ticker");
     }
     public void setIsGrappled(bool isG, Vector3 grappled)
@@ -169,6 +189,14 @@ public class ComboTracker : MonoBehaviour
     public void setIsGrounded(bool isG)
     {
         isGrounded = isG;
+    }
+    public void Collect()
+    {
+        textFadeTimeIndex = textFadeTime;
+
+        float tempAir = airTime;
+        float tempGrapple = grappleInARow;
+        collectedPoints += 100 * Math.Clamp((int)tempAir, 1, int.MaxValue) * Math.Clamp((int)tempGrapple, 1, int.MaxValue);
     }
     public void getRespawned(bool respawn)
     {

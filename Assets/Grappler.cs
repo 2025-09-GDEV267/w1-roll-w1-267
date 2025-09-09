@@ -109,11 +109,14 @@ public class Grappler : MonoBehaviour
     void DrawRope()
     {
         if (!joint) return;
-        lineRenderer.SetPosition(0, grappleTip.transform.position);
-        lineRenderer.SetPosition(1, grapplePoint);
+        if (isGrappled)
+        {
+            lineRenderer.SetPosition(0, grappleTip.transform.position);
+            lineRenderer.SetPosition(1, grapplePoint);
+        }    
     }
 
-    private void StopGrapple()
+    public void StopGrapple()
     {
         isGrappled = false;
         lineRenderer.positionCount = 0;

@@ -34,10 +34,6 @@ public class NewInputPlayerController : MonoBehaviour
 
         // Initialize count to zero.
         count = 0;
-
-        // Update the count display.
-        SetCountText();
-
         // Initially set the win text to be inactive.
         winTextObject.gameObject.SetActive(false);
     }
@@ -76,21 +72,7 @@ public class NewInputPlayerController : MonoBehaviour
             count = count + 1;
 
             // Update the count display.
-            SetCountText();
         }
     }
 
-    // Function to update the displayed count of "PickUp" objects collected.
-    void SetCountText()
-    {
-        // Update the count text with the current count.
-        countText.text = "Count: " + count.ToString();
-
-        // Check if the count has reached or exceeded the win condition.
-        if (count >= 12)
-        {
-            // Display the win text.
-            winTextObject.gameObject.SetActive(true);
-        }
-    }
 }
