@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -8,6 +9,10 @@ public class pauseMenu : MonoBehaviour
     GameObject menu;
     [SerializeField]
     StartGameScene gameStart;
+    [SerializeField]
+    GameObject Combo;
+    [SerializeField]
+    TMP_Text timerText;
     void Start()
     {
         menu.SetActive(false);
@@ -20,6 +25,8 @@ public class pauseMenu : MonoBehaviour
         {
             Time.timeScale = 0f;
             menu.SetActive(true);
+            Combo.SetActive(false);
+            timerText.enabled = false;
         }
         if (menu.activeInHierarchy)
         {
@@ -42,6 +49,8 @@ public class pauseMenu : MonoBehaviour
 
     public void returnToGame()
     {
+        Combo.SetActive(true);
+        timerText.enabled = true;
         Time.timeScale = 1f;
         menu.SetActive(false);
     }

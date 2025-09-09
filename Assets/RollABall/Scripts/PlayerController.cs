@@ -27,8 +27,6 @@ public class PlayerController : MonoBehaviour {
 	public ComboTracker comboTracker;
 	[SerializeField]
 	ScreenWipe screenWipe;
-	[SerializeField]
-	AudioSource dead;
 
 	private bool canReset = true;
 	// At the start of the game..
@@ -85,11 +83,6 @@ public class PlayerController : MonoBehaviour {
 		{
 			screenWipe.StartScreenWipe();
 
-			if (dead.isPlaying == false)
-			{
-                dead.pitch = UnityEngine.Random.Range(0.9f, 1.1f);
-                dead.Play();
-			}
 			canReset = false;
 			Invoke("Respawn",1.5f);
 		}

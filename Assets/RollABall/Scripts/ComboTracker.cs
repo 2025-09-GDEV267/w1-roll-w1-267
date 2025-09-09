@@ -42,9 +42,14 @@ public class ComboTracker : MonoBehaviour
 
     private bool boolToBeToggledForTheAddedTextThingCauseICantCode = false;
     Color flairColor;
+
+    [SerializeField]
+    GameScoring gameScoring;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        gameScoring = GameObject.FindGameObjectWithTag("ScoreTracker").GetComponent<GameScoring>();
+        gameScoring.StartGame();
         ComboTotal.GetComponent<TMP_Text>().enabled = false;
         changeFlairColor();
     }
@@ -134,7 +139,7 @@ public class ComboTracker : MonoBehaviour
             potentialScore = Player.getMagnitude() * Convert.ToInt32(airTime) * grappleInARow + compoundScore;
             
         }
-        if (grappleInARow > 0)
+        if (grappleInARow > 1)
         {
             VelText.text = "Velocity(" + Player.getMagnitude() + ")";
             AirText.text = "Air-Time(" + MathF.Round(airTime, 2)  + "s)";

@@ -7,6 +7,7 @@ public class MenuManager : MonoBehaviour
     public Animator animator;
     private void Start()
     {
+        Time.timeScale = 1f;
         changeScenes = false;
     }
     public void startGameButton()

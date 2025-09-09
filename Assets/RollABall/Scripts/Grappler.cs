@@ -32,8 +32,6 @@ public class Grappler : MonoBehaviour
 
             float itteration = Vector3.Dot(cam.transform.forward, (i.transform.position - cam.transform.position).normalized);
 
-            Debug.Log(itteration);
-
             if (Closest != null)
             {
 
