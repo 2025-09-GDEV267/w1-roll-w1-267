@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -19,7 +20,18 @@ public class ScoreScreenScore : MonoBehaviour
     {
         if (gameScoring != null && scoreText != null)
         {
-            scoreText.text = gameScoring.getScore().ToString();
+            if (gameScoring.getScore() < 999999)
+            {
+                scoreText.text = gameScoring.getScore().ToString();
+            }
+            else if (gameScoring.getScore() < 999999999)
+            {
+                scoreText.text = Math.Round(gameScoring.getScore() / 1000000f, 2) + "M";
+            }
+            else
+            {
+                scoreText.text = "Too much!\n" + gameScoring.getScore().ToString(); 
+            }
         }
         if (Input.GetKeyDown(KeyCode.Joystick1Button0))
         {
